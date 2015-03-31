@@ -19,17 +19,17 @@ app.use(express.static(__dirname + '/public'));
 
 //mongoose.connect(process.env.OPENSHIFT_MONGO_DB_URL);
 
-//var Schema = mongoose.Schema;
-//var ObjectId = Schema.ObjectId;
-//
-//var User = mongoose.model('User', new Schema ({
-//    id: ObjectId,
-//    firstName: String,
-//    lastName: String,
-//    email: {type: String, unique: true},
-//    password: String
-//}));
-//
+var Schema = mongoose.Schema;
+var ObjectId = Schema.ObjectId;
+
+var User = mongoose.model('User', new Schema ({
+    id: ObjectId,
+    firstName: String,
+    lastName: String,
+    email: {type: String, unique: true},
+    password: String
+}));
+
 //app.post('/signUp', function(req, res) {
 //    if (req.session && req.session.user)
 //        res.json({status:'yw', result:req.session.user});

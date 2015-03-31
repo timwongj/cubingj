@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="1f695108-5ed5-4fb3-9ae7-98f46d281aa0" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/server.js" afterPath="$PROJECT_DIR$/server.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="cubingj.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -26,9 +27,11 @@
       <file leaf-file-name="server.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/server.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.43037975">
-              <caret line="90" column="0" selection-start-line="90" selection-start-column="0" selection-end-line="90" selection-end-column="0" />
-              <folding />
+            <state vertical-scroll-proportion="0.6835443">
+              <caret line="31" column="0" selection-start-line="31" selection-start-column="0" selection-end-line="31" selection-end-column="0" />
+              <folding>
+                <marker date="1427779123000" expanded="true" signature="547:2809" placeholder="//..." />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -344,9 +347,11 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/server.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.43037975">
-          <caret line="90" column="0" selection-start-line="90" selection-start-column="0" selection-end-line="90" selection-end-column="0" />
-          <folding />
+        <state vertical-scroll-proportion="0.6835443">
+          <caret line="31" column="0" selection-start-line="31" selection-start-column="0" selection-end-line="31" selection-end-column="0" />
+          <folding>
+            <marker date="1427779123000" expanded="true" signature="547:2809" placeholder="//..." />
+          </folding>
         </state>
       </provider>
     </entry>
