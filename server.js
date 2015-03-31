@@ -1,171 +1,113 @@
 var express = require('express');
 var app = express();
+var bodyParser = require('body-parser');
+var multer = require('multer');
+var mongoose = require('mongoose');
+var sessions = require('client-sessions');
+var bcrypt = require('bcryptjs');
 
-app.get('/', function(req, res) {
-   res.send('Welcome to Cubingj');
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(multer());
+
+app.use(sessions({
+    cookieName: 'session',
+    secret: '9ds8yafhoi3a932ubnfnkdsoasa83hkffo'
+}));
+
+app.use(express.static(__dirname + '/public'));
+
+mongoose.connect('mongodb://$OPENSHIFT_MONGODB_DB_HOST:$OPENSHIFT_MONGODB_DB_PORT/');
+
+var Schema = mongoose.Schema;
+var ObjectId = Schema.ObjectId;
+
+var User = mongoose.model('User', new Schema ({
+    id: ObjectId,
+    firstName: String,
+    lastName: String,
+    email: {type: String, unique: true},
+    password: String
+}));
+
+app.post('/signUp', function(req, res) {
+    if (req.session && req.session.user)
+        res.json({status:'yw', result:req.session.user});
+    else {
+        var hash = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(10));
+        var user = new User({
+            firstName:req.body.firstName,
+            lastName:req.body.lastName,
+            email:req.body.email,
+            password:hash
+        });
+        user.save(function(err) {
+            if (err)
+                res.json({status:'bj', result:err});
+            else
+                res.json({status:'gj', result:user});
+        });
+    }
 });
+
+app.post('/login', function(req, res) {
+    if (req.session && req.session.user)
+        res.json({status:'yw', result:req.session.user});
+    else {
+        User.findOne({email: req.body.email}, function (err, user) {
+            console.log('Found email... verifying password');
+            if (!user) {
+                res.json({status:'bj', result:err});
+                console.log('User does not exist');
+            }
+            else if (bcrypt.compareSync(req.body.password, user.password)) {
+                req.session.user = user;
+                res.json({status:'gj', result:user});
+                console.log('Logged in');
+            }
+            else {
+                res.json({status:'bj', result:err});
+                console.log('BJ');
+            }
+        });
+    }
+});
+
+app.get('/profile', function(req, res) {
+    if (req.session && req.session.user) {
+        User.findOne({email: req.session.user.email}, function (err, user) {
+            if (user) {
+                res.json({status:'gj', result:user});
+            } else {
+                req.session.reset();
+                res.json({status:'bj', result:err});
+            }
+        });
+    } else {
+        res.json({status:'bj', result:null});
+        console.log('Session does not exist');
+    }
+});
+
+app.post('/logout', function(req, res) {
+    req.session.reset();
+    res.send({status:'gj', result:null});
+    console.log('Logging Out');
+})
 
 var ip = process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1";
 var port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
 
 app.listen(port, ip);
 
-//#!/bin/env node
-////  OpenShift sample Node application
 //var express = require('express');
-//var fs      = require('fs');
+//var app = express();
 //
+//app.get('/', function(req, res) {
+//   res.send('Welcome to Cubingj');
+//});
 //
-///**
-// *  Define the sample application.
-// */
-//var SampleApp = function() {
+//var ip = process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1";
+//var port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
 //
-//    //  Scope.
-//    var self = this;
-//
-//
-//    /*  ================================================================  */
-//    /*  Helper functions.                                                 */
-//    /*  ================================================================  */
-//
-//    /**
-//     *  Set up server IP address and port # using env variables/defaults.
-//     */
-//    self.setupVariables = function() {
-//        //  Set the environment variables we need.
-//        self.ipaddress = process.env.OPENSHIFT_NODEJS_IP;
-//        self.port      = process.env.OPENSHIFT_NODEJS_PORT || 8080;
-//
-//        if (typeof self.ipaddress === "undefined") {
-//            //  Log errors on OpenShift but continue w/ 127.0.0.1 - this
-//            //  allows us to run/test the app locally.
-//            console.warn('No OPENSHIFT_NODEJS_IP var, using 127.0.0.1');
-//            self.ipaddress = "127.0.0.1";
-//        };
-//    };
-//
-//
-//    /**
-//     *  Populate the cache.
-//     */
-//    self.populateCache = function() {
-//        if (typeof self.zcache === "undefined") {
-//            self.zcache = { 'index.html': '' };
-//        }
-//
-//        //  Local cache for static content.
-//        self.zcache['index.html'] = fs.readFileSync('./index.html');
-//    };
-//
-//
-//    /**
-//     *  Retrieve entry (content) from cache.
-//     *  @param {string} key  Key identifying content to retrieve from cache.
-//     */
-//    self.cache_get = function(key) { return self.zcache[key]; };
-//
-//
-//    /**
-//     *  terminator === the termination handler
-//     *  Terminate server on receipt of the specified signal.
-//     *  @param {string} sig  Signal to terminate on.
-//     */
-//    self.terminator = function(sig){
-//        if (typeof sig === "string") {
-//           console.log('%s: Received %s - terminating sample app ...',
-//                       Date(Date.now()), sig);
-//           process.exit(1);
-//        }
-//        console.log('%s: Node server stopped.', Date(Date.now()) );
-//    };
-//
-//
-//    /**
-//     *  Setup termination handlers (for exit and a list of signals).
-//     */
-//    self.setupTerminationHandlers = function(){
-//        //  Process on exit and signals.
-//        process.on('exit', function() { self.terminator(); });
-//
-//        // Removed 'SIGPIPE' from the list - bugz 852598.
-//        ['SIGHUP', 'SIGINT', 'SIGQUIT', 'SIGILL', 'SIGTRAP', 'SIGABRT',
-//         'SIGBUS', 'SIGFPE', 'SIGUSR1', 'SIGSEGV', 'SIGUSR2', 'SIGTERM'
-//        ].forEach(function(element, index, array) {
-//            process.on(element, function() { self.terminator(element); });
-//        });
-//    };
-//
-//
-//    /*  ================================================================  */
-//    /*  App server functions (main app logic here).                       */
-//    /*  ================================================================  */
-//
-//    /**
-//     *  Create the routing table entries + handlers for the application.
-//     */
-//    self.createRoutes = function() {
-//        self.routes = { };
-//
-//        self.routes['/asciimo'] = function(req, res) {
-//            var link = "http://i.imgur.com/kmbjB.png";
-//            res.send("<html><body><img src='" + link + "'></body></html>");
-//        };
-//
-//        self.routes['/'] = function(req, res) {
-//            res.setHeader('Content-Type', 'text/html');
-//            res.send(self.cache_get('index.html') );
-//        };
-//    };
-//
-//
-//    /**
-//     *  Initialize the server (express) and create the routes and register
-//     *  the handlers.
-//     */
-//    self.initializeServer = function() {
-//        self.createRoutes();
-//        self.app = express.createServer();
-//
-//        //  Add handlers for the app (from the routes).
-//        for (var r in self.routes) {
-//            self.app.get(r, self.routes[r]);
-//        }
-//    };
-//
-//
-//    /**
-//     *  Initializes the sample application.
-//     */
-//    self.initialize = function() {
-//        self.setupVariables();
-//        self.populateCache();
-//        self.setupTerminationHandlers();
-//
-//        // Create the express server and routes.
-//        self.initializeServer();
-//    };
-//
-//
-//    /**
-//     *  Start the server (starts up the sample application).
-//     */
-//    self.start = function() {
-//        //  Start the app on the specific interface (and port).
-//        self.app.listen(self.port, self.ipaddress, function() {
-//            console.log('%s: Node server started on %s:%d ...',
-//                        Date(Date.now() ), self.ipaddress, self.port);
-//        });
-//    };
-//
-//};   /*  Sample Application.  */
-//
-//
-//
-///**
-// *  main():  Main code.
-// */
-//var zapp = new SampleApp();
-//zapp.initialize();
-//zapp.start();
-//
+//app.listen(port, ip);

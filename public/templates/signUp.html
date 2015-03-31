@@ -1,0 +1,36 @@
+<div class="jumbotron">
+    <h1>Sign Up</h1>
+</div>
+<div class="col-md-8 col-md-offset-2">
+    <div class="row">
+        <div class="col-md-10 col-md-offset-2"><h2>Sign Up</h2><br></div>
+    </div>
+    <form class="form-horizontal" ng-submit="signUp()">
+        <div class="form-group">
+            <label for="newFirstNameInput" class="col-sm-2 control-label">Name</label>
+            <div class="col-sm-5">
+                <input type="text" class="form-control" id="newFirstNameInput" placeholder="First Name" ng-model="newUser.firstName">
+            </div>
+            <div class="col-sm-5">
+                <input type="text" class="form-control" id="newLastNameInput" placeholder="Last Name" ng-model="newUser.lastName">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="newEmailInput" class="col-sm-2 control-label">Email</label>
+            <div class="col-sm-10">
+                <input type="email" class="form-control" id="newEmailInput" placeholder="Email" ng-model="newUser.email">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="newPasswordInput" class="col-sm-2 control-label">Password</label>
+            <div class="col-sm-10">
+                <input type="password" class="form-control" id="newPasswordInput" placeholder="Password" ng-model="newUser.password">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-primary">Sign Up</button>
+            </div>
+        </div>
+    </form>
+</div>
