@@ -17,8 +17,8 @@ app.use(multer());
 
 app.use(express.static(__dirname + '/public'));
 
-//mongoose.connect('mongodb://$OPENSHIFT_MONGODB_DB_HOST:$OPENSHIFT_MONGODB_DB_PORT/');
-//
+mongoose.connect('mongodb://$OPENSHIFT_MONGODB_DB_HOST:$OPENSHIFT_MONGODB_DB_PORT/');
+
 //var Schema = mongoose.Schema;
 //var ObjectId = Schema.ObjectId;
 //
