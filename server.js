@@ -10,14 +10,14 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(multer());
 
-//app.use(sessions({
-//    cookieName: 'session',
-//    secret: '9ds8yafhoi3a932ubnfnkdsoasa83hkffo'
-//}));
+app.use(sessions({
+    cookieName: 'session',
+    secret: '9ds8yafhoi3a932ubnfnkdsoasa83hkffo'
+}));
 
 app.use(express.static(__dirname + '/public'));
 
-mongoose.connect(process.env.OPENSHIFT_MONGO_DB_URL);
+//mongoose.connect(process.env.OPENSHIFT_MONGO_DB_URL);
 
 //var Schema = mongoose.Schema;
 //var ObjectId = Schema.ObjectId;
@@ -88,12 +88,12 @@ mongoose.connect(process.env.OPENSHIFT_MONGO_DB_URL);
 //        console.log('Session does not exist');
 //    }
 //});
-//
-//app.post('/logout', function(req, res) {
-//    req.session.reset();
-//    res.send({status:'gj', result:null});
-//    console.log('Logging Out');
-//});
+
+app.post('/logout', function(req, res) {
+    req.session.reset();
+    res.send({status:'gj', result:null});
+    console.log('Logging Out');
+});
 
 var ip = process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1";
 var port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
