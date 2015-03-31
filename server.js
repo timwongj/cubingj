@@ -10,14 +10,26 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(multer());
 
+// define session cookie
 app.use(sessions({
     cookieName: 'session',
     secret: '9ds8yafhoi3a932ubnfnkdsoasa83hkffo'
 }));
 
+// serve pages in the public directory
 app.use(express.static(__dirname + '/public'));
 
-//mongoose.connect(process.env.OPENSHIFT_MONGO_DB_URL);
+// default to local DB
+var connectionString = 'mongodb://localhost/auth';
+// connect to OPENSHIFT DB
+if (process.env.OPENSHIFT_MONGODB_DB_PASSWORD) {
+    connection_string = process.env.OPENSHIFT_MONGODB_DB_USERNAME + ":" +
+    process.env.OPENSHIFT_MONGODB_DB_PASSWORD + "@" +
+    process.env.OPENSHIFT_MONGODB_DB_HOST + ':' +
+    process.env.OPENSHIFT_MONGODB_DB_PORT + '/' +
+    process.env.OPENSHIFT_APP_NAME;
+}
+mongoose.connect(connectionString);
 
 var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
@@ -99,17 +111,3 @@ var ip = process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1";
 var port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
 
 app.listen(port, ip);
-
-
-
-//var express = require('express');
-//var app = express();
-//
-//app.get('/', function(req, res) {
-//   res.send('Welcome to Cubingj');
-//});
-//
-//var ip = process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1";
-//var port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
-//
-//app.listen(port, ip);
