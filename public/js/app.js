@@ -73,7 +73,7 @@ app.controller('profileController', function ($scope, $http, $location) {
             $scope.user.lastName = response.result.lastName;
             $scope.user.email = response.result.email;
         } else if (response.status == 'bj') {
-            $location.path('/login');
+            $location.path('/logout');
         }
     });
 });
