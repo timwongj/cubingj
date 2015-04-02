@@ -3,6 +3,7 @@ var app = express();
 var bodyParser = require('body-parser');
 var multer = require('multer');
 var mongoose = require('mongoose');
+var passport = require('passport'), LocalStrategy = require('passport-local');
 var sessions = require('client-sessions');
 var bcrypt = require('bcryptjs');
 
@@ -23,8 +24,25 @@ app.use(express.static(__dirname + '/public'));
 var connectionString = process.env.OPENSHIFT_MONGODB_DB_URL || 'mongodb://localhost/auth';
 mongoose.connect(connectionString);
 
+// define User Schema
 var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
+
+// define passport strategy
+passport.use(new LocalStrategy (function (username, password, done) {
+    User.findOne({username:username}, function (err, user) {
+        if (err) {
+            return done(err);
+        }
+        if (!user) {
+            return done(null, false, {message:'Incorrect username or password.'});
+        }
+        if (!user.validPassword(password)) {
+            return done(null, false, {message:'Incorrect username or password.'});
+        }
+        return done(null, user);
+    });
+}));
 
 var User = mongoose.model('User', new Schema ({
     id: ObjectId,
@@ -59,19 +77,15 @@ app.post('/login', function(req, res) {
         res.json({status:'yw', result:req.session.user});
     else {
         User.findOne({email: req.body.email}, function (err, user) {
-            console.log('Found email... verifying password');
             if (!user) {
                 res.json({status:'bj', result:err});
-                console.log('User does not exist');
             }
             else if (bcrypt.compareSync(req.body.password, user.password)) {
                 req.session.user = user;
                 res.json({status:'gj', result:user});
-                console.log('Logged in');
             }
             else {
                 res.json({status:'bj', result:err});
-                console.log('BJ');
             }
         });
     }
@@ -96,7 +110,6 @@ app.get('/profile', function(req, res) {
 app.post('/logout', function(req, res) {
     req.session.reset();
     res.send({status:'gj', result:null});
-    console.log('Logging Out');
 });
 
 var ip = process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1";
